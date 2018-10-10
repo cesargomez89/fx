@@ -9,16 +9,10 @@ module Fx
         # The SQL query used by F(x) to retrieve the functions considered
         # dumpable into `db/schema.rb`.
         FUNCTIONS_WITH_DEFINITIONS_QUERY = <<-EOS.freeze
-          SELECT
-              pp.proname AS name,
-              pg_get_functiondef(pp.oid) AS definition
-          FROM pg_proc pp
-          JOIN pg_namespace pn
-              ON pn.oid = pp.pronamespace
-          LEFT JOIN pg_depend pd
-              ON pd.objid = pp.oid AND pd.deptype = 'e'
-          WHERE pn.nspname = 'public' AND pd.objid IS NULL
-          ORDER BY pp.oid;
+        SELECT routine_name as name, routine_definition as definition
+        FROM INFORMATION_SCHEMA.Routines
+        WHERE ROUTINE_SCHEMA != 'sys'
+        ORDER by datetime_precision;
         EOS
 
         # Wraps #all as a static facade.
